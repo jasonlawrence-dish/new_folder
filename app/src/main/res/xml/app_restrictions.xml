@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  WS1 Managed App Configuration schema.
+  WS1 admins set these keys under the app's "Application Configuration"
+  (send configuration) so the device gets its folder config with NO file
+  and NO storage permission.
+-->
+<restrictions xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <restriction
+        android:key="config"
+        android:title="@string/mc_config_title"
+        android:description="@string/mc_config_desc"
+        android:restrictionType="string"
+        android:defaultValue="" />
+
+    <restriction
+        android:key="defaultFolder"
+        android:title="@string/mc_default_folder_title"
+        android:description="@string/mc_default_folder_desc"
+        android:restrictionType="string"
+        android:defaultValue="" />
+
+    <restriction
+        android:key="configFileName"
+        android:title="@string/mc_filename_title"
+        android:description="@string/mc_filename_desc"
+        android:restrictionType="string"
+        android:defaultValue="folders.txt" />
+</restrictions>

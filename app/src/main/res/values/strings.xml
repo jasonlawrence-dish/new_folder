@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">New Folder</string>
+
+    <!-- WS1 managed app configuration labels -->
+    <string name="mc_config_title">Folder config (full text)</string>
+    <string name="mc_config_desc">The full folders.txt contents. Highest priority source.</string>
+    <string name="mc_default_folder_title">Default folder name</string>
+    <string name="mc_default_folder_desc">Which Folder section to show when no folder is passed in the launch intent.</string>
+    <string name="mc_filename_title">Config file name</string>
+    <string name="mc_filename_desc">Override the file name read from storage (default folders.txt).</string>
+</resources>

@@ -1,0 +1,5 @@
+Folder:Boost
+app,Boost Unlock,com.dish.wireless.deviceunlock,default
+app,Camera,com.sec.android.app.camera,default
+app,YOOBIC ONE,com.ipelia.yoobicv3,default
+web,Device Diagnostics,https://appconfiguat.cloud.hylamobile.com/hyladiag/launch.html?co=035310&id=boosttesters&code=[REDACTED_PARAM]&lang=0,/.pics/diag.png

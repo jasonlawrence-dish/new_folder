@@ -1,0 +1,18 @@
+*.iml
+.gradle/
+/local.properties
+/.idea/
+.DS_Store
+/build
+app/build/
+/captures
+.externalNativeBuild
+.cxx
+# Build outputs / APK snapshots
+app/release/
+*.apk
+desktop.ini
+# Secrets — never commit
+keystore.properties
+*.jks
+*.keystore
