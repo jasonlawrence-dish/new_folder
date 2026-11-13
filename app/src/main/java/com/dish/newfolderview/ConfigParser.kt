@@ -20,6 +20,7 @@ import android.util.Log
  *   app,<Label>,<process|pkg/Activity>,<default|/.pics/x.png>
  *   web,<Label>,<FULL_URL>,/.pics/x.png
  *   zinc,<Label>,<hotlineURL>,/.pics/x.png
+ *   image,<Label>,<@name|/.pics/x.png>,<default|/.pics/x.png>
  *
  * Lines before the first `Folder:` header are ignored.
  */
@@ -99,15 +100,16 @@ object ConfigParser {
 
     /**
      * Insert a line break before each record keyword (Folder:, app,, web,, zinc,,
-     * NumberOfApps:) when it is preceded by spaces/tabs. This recovers records from
-     * configs whose newlines were flattened to spaces by an MDM config field, while
-     * leaving already-multi-line input unchanged (keywords there follow a newline,
-     * not a space). NOTE: avoid ending a label with the bare word app/web/zinc
-     * immediately followed by a comma, as that could be mistaken for a record start.
+     * image,, NumberOfApps:) when it is preceded by spaces/tabs. This recovers
+     * records from configs whose newlines were flattened to spaces by an MDM
+     * config field, while leaving already-multi-line input unchanged (keywords
+     * there follow a newline, not a space). NOTE: avoid ending a label with the
+     * bare word app/web/zinc/image immediately followed by a comma, as that could
+     * be mistaken for a record start.
      */
     private fun reinsertRecordBreaks(text: String): String {
         val re = Regex(
-            "[ \\t]+(?=(?:app,|web,|zinc,|Folder:|NumberOfApps:|NumberofApps:))",
+            "[ \\t]+(?=(?:app,|web,|zinc,|image,|Folder:|NumberOfApps:|NumberofApps:))",
             RegexOption.IGNORE_CASE
         )
         return re.replace(text, "\n")

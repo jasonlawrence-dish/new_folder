@@ -67,6 +67,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    // Local JVM unit tests run against a stub android.jar where every method
+    // throws "not mocked" by default. ConfigParser calls android.util.Log.w
+    // when it emits warnings, so warning-producing tests (bad lines, web+default
+    // icon) would throw RuntimeException. Returning default values makes those
+    // stubbed calls no-ops (Log.w -> returns 0, no throw).
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {

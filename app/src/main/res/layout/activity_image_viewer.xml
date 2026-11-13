@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Scan-optimized full-screen viewer. WHITE background provides the quiet-zone
+  and high-contrast surface a scanner needs. The image is centered and capped
+  (not edge-to-edge) because the customer's phone scans it up close. Tapping
+  anywhere dismisses (handled in ImageViewerActivity).
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewer_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:clickable="true"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <ImageView
+            android:id="@+id/viewer_image"
+            android:layout_width="420dp"
+            android:layout_height="420dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/viewer_image_desc" />
+
+        <TextView
+            android:id="@+id/viewer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/viewer_notice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#B00020"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:textColor="#80000000"
+            android:textSize="13sp"
+            android:text="@string/viewer_tap_to_close" />
+    </LinearLayout>
+</FrameLayout>

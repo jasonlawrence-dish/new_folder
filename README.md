@@ -91,3 +91,34 @@ and let it sync, or run `gradle wrapper` once to generate `gradlew`.
   one app can serve multiple folders, or it's one-folder-per-install).
 - Generate the Gradle wrapper jar + `gradlew`/`gradlew.bat` (not created here).
 - Supply a real launcher icon if the vector placeholder isn't wanted.
+
+
+## `image` tiles (display a static image / QR, launch nothing)
+
+A fourth tile type, `image`, shows a picture full-screen when tapped instead of
+opening an app or URL. Built for the pair/activation workflow: an employee taps
+the tile and holds the tablet so the **customer's phone scans the QR** up close,
+then continues the process on the customer device.
+
+```
+image,Pair QR,@devciced,default
+image,Pair QR,/.pics/pairqr.png,default
+```
+
+| Field | image |
+|-------|-------|
+| 1 type | `image` |
+| 2 label | shown under the tile (and as a caption in the viewer) |
+| 3 target | the image to show: bundled `@name` (-> `res/drawable/ic_img_<name>`) **or** a `/.pics/x.png` path |
+| 4 icon | `default` = use the image **itself** as the tile thumbnail, or a separate `/.pics/x.png` thumb |
+
+- Tapping opens a full-screen viewer: **white background** (clean scan surface +
+  quiet zone), **max screen brightness**, and **keep-screen-on** — all tuned so a
+  phone scans the code reliably at close range. Tap anywhere or press Back to dismiss.
+- The image is shown centered at a sensible capped size (not edge-to-edge) — the
+  customer's phone scans it from inches away, so it does not need to be huge.
+- Launches **nothing external**, so an `image` tile is unaffected by the WS1
+  Launcher allowlist.
+- `QRDEVCICED.png` ships bundled in the APK as `ic_img_devciced` -> reference it
+  as `@devciced`. To swap the QR in the field without a rebuild, deliver
+  `/.pics/pairqr.png` instead and point the target there.

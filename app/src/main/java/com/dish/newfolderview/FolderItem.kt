@@ -4,11 +4,16 @@ package com.dish.newfolderview
  * One tile in a folder. Mirrors a single line of the config file:
  *   type,Label,target,icon
  *
- * type   -> ItemType (app | web | zinc)
+ * type   -> ItemType (app | web | zinc | image)
  * label  -> text shown under the icon
  * target -> app: process/package name (may be "pkg/Activity")
  *           web/zinc: full URL
- * icon   -> "default" (app launcher icon) OR a path like /.pics/foo.png
+ *           image: the image to show full-screen when tapped. Either a
+ *                  bundled reference "@name" (-> res/drawable/ic_img_<name>)
+ *                  or a path like /.pics/foo.png. Launches NOTHING external.
+ * icon   -> "default" (app launcher icon) OR a path like /.pics/foo.png.
+ *           For an image entry, "default" means "use the image itself as
+ *           the tile thumbnail" (so the tile shows a mini preview).
  */
 data class FolderItem(
     val type: ItemType,
@@ -30,13 +35,14 @@ data class FolderItem(
 }
 
 enum class ItemType {
-    APP, WEB, ZINC;
+    APP, WEB, ZINC, IMAGE;
 
     companion object {
         fun from(raw: String): ItemType? = when (raw.trim().lowercase()) {
             "app" -> APP
             "web" -> WEB
             "zinc" -> ZINC
+            "image" -> IMAGE
             else -> null
         }
     }

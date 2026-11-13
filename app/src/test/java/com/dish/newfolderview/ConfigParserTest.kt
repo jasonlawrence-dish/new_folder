@@ -8,8 +8,9 @@ import org.junit.Test
  * Covers the exact failure modes that crashed Folderview 4.0.6:
  *  - custom folder names, empty sections, missing count line, bad lines,
  *    BOM/CRLF, web-with-'default'. None of these may throw.
+ * Also covers the new `image` tile type.
  */
-class `e2q  q22ConfigParserTest {
+class ConfigParserTest {
 
     @Test fun customFolderName_isAccepted() {
         val r = ConfigParser.parse("Folder:BoostDiag\napp,Boost Unlock,com.dish.wireless.deviceunlock,default")
@@ -81,5 +82,37 @@ class `e2q  q22ConfigParserTest {
         assertEquals(3, r.folders[0].items.size)
         assertEquals("Boost Unlock", r.folders[0].items[0].label)
         assertEquals("YOOBIC ONE", r.folders[0].items[2].label)
+    }
+
+    @Test fun imageEntry_isParsed_withBundledRef() {
+        // "default" icon => tile previews the image itself; target is the bundled ref.
+        val r = ConfigParser.parse("Folder:Boost\nimage,Pair QR,@devciced,default")
+        val item = r.folders[0].items[0]
+        assertEquals(ItemType.IMAGE, item.type)
+        assertEquals("Pair QR", item.label)
+        assertEquals("@devciced", item.target)
+        assertEquals("default", item.icon)
+    }
+
+    @Test fun imageEntry_isParsed_withPicsPathAndSeparateThumb() {
+        val r = ConfigParser.parse("Folder:Boost\nimage,Pair QR,/.pics/qr.png,/.pics/thumb.png")
+        val item = r.folders[0].items[0]
+        assertEquals(ItemType.IMAGE, item.type)
+        assertEquals("/.pics/qr.png", item.target)
+        assertEquals("/.pics/thumb.png", item.icon)
+    }
+
+    @Test fun flattenedConfig_withImageTile_splitsCorrectly() {
+        // Regression: a flattened (single-line) config with an image tile must
+        // split the image record out, not glue it onto the preceding app line.
+        val flat = "Folder:Tools app,YOOBIC ONE,com.ipelia.yoobicv3,default " +
+            "image,Pair QR,@devciced,default Folder:blank " +
+            "app,Camera,com.sec.android.app.camera,default"
+        val r = ConfigParser.parse(flat)
+        val tools = r.folders.first { it.name == "Tools" }
+        assertEquals(2, tools.items.size)
+        assertEquals(ItemType.IMAGE, tools.items[1].type)
+        assertEquals("Pair QR", tools.items[1].label)
+        assertEquals("@devciced", tools.items[1].target)
     }
 }

@@ -42,5 +42,13 @@
                 <data android:scheme="newfolderview" android:host="folder" />
             </intent-filter>
         </activity>
+
+        <!-- Full-screen image/QR viewer. NOT exported: only this app starts it
+             (image tiles). Launches nothing external -> no WS1 allowlist impact. -->
+        <activity
+            android:name=".ImageViewerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NewFolderView"
+            android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize" />
     </application>
 </manifest>

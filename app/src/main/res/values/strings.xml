@@ -9,4 +9,9 @@
     <string name="mc_default_folder_desc">Which Folder section to show when no folder is passed in the launch intent.</string>
     <string name="mc_filename_title">Config file name</string>
     <string name="mc_filename_desc">Override the file name read from storage (default folders.txt).</string>
+
+    <!-- Full-screen image/QR viewer -->
+    <string name="viewer_image_desc">Full-screen image</string>
+    <string name="viewer_image_missing">Image not available.</string>
+    <string name="viewer_tap_to_close">Tap anywhere to close</string>
 </resources>

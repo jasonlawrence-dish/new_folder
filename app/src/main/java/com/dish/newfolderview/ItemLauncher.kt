@@ -10,7 +10,9 @@ import android.widget.Toast
 
 /**
  * Launches a FolderItem. Apps via launcher intent (or explicit component);
- * web/zinc via ACTION_VIEW. Never throws — shows a toast on failure.
+ * web/zinc via ACTION_VIEW; image via an in-app full-screen viewer (launches
+ * NOTHING external, so it sidesteps the WS1 Launcher allowlist). Never throws
+ * — shows a toast on failure.
  *
  * NOTE: On a WS1 Launcher kiosk, the launcher allowlist still governs what
  * may start. If an app is not allowlisted, the OS/launcher may block it even
@@ -25,6 +27,7 @@ object ItemLauncher {
         return when (item.type) {
             ItemType.APP -> launchApp(context, item)
             ItemType.WEB, ItemType.ZINC -> launchUrl(context, item)
+            ItemType.IMAGE -> launchImage(context, item)
         }
     }
 
@@ -66,6 +69,28 @@ object ItemLauncher {
             toast(context, "No app available to open ${item.label}")
         } catch (t: Throwable) {
             Log.w(TAG, "Failed to open URL for ${item.label}: ${t.message}")
+            toast(context, "Couldn't open ${item.label}")
+        }
+        return false
+    }
+
+    /**
+     * Open the image full-screen in our own viewer (ImageViewerActivity).
+     * The image reference (bundled "@name" or /.pics path) is passed through;
+     * the viewer resolves it via IconLoader.loadRef. No external app, no
+     * allowlist dependency.
+     */
+    private fun launchImage(context: Context, item: FolderItem): Boolean {
+        try {
+            val intent = Intent(context, ImageViewerActivity::class.java).apply {
+                putExtra(ImageViewerActivity.EXTRA_IMAGE_REF, item.target)
+                putExtra(ImageViewerActivity.EXTRA_LABEL, item.label)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+            return true
+        } catch (t: Throwable) {
+            Log.w(TAG, "Failed to open image for ${item.label}: ${t.message}")
             toast(context, "Couldn't open ${item.label}")
         }
         return false

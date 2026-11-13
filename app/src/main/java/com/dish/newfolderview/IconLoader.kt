@@ -11,7 +11,10 @@ import java.io.File
 /**
  * Resolves an icon Drawable for a FolderItem.
  *  - app + "default"  -> the app's real launcher icon
- *  - "@name"          -> bundled drawable res/drawable/ic_web_<name> (in-APK)
+ *  - image + "default" -> the image's OWN target rendered as the thumbnail
+ *                         (so an image tile previews a mini version of itself)
+ *  - "@name"          -> bundled drawable res/drawable/ic_web_<name> OR
+ *                        ic_img_<name> (in-APK, no external storage needed)
  *  - icon path ("/.pics/x.png" or absolute) -> load from external storage
  *  - anything missing  -> bundled fallback (R.mipmap/drawable) via caller
  *
@@ -32,39 +35,58 @@ object IconLoader {
             }
         }
 
-        // Bundled drawable reference: "@name" -> res/drawable/ic_web_<name>.
-        // Lets web/zinc icons ship inside the APK (no external storage needed).
-        val ic = item.icon.trim()
-        if (ic.startsWith("@")) {
-            val resName = "ic_web_" + ic.removePrefix("@").lowercase()
-            return try {
-                val id = context.resources.getIdentifier(resName, "drawable", context.packageName)
-                if (id != 0) context.getDrawable(id) else {
-                    Log.i(TAG, "Bundled icon not found: $resName")
-                    null
+        // Image tile asking for the default thumbnail: render the image itself
+        // (its target) as the tile preview. This is what makes the QR show as a
+        // small preview in the folder before it's tapped open full-screen.
+        if (item.type == ItemType.IMAGE && item.usesDefaultIcon) {
+            return loadRef(context, item.target)
+        }
+
+        // Otherwise load whatever the icon field points at.
+        return loadRef(context, item.icon)
+    }
+
+    /**
+     * Load a drawable from an image reference, which may be either a bundled
+     * resource ("@name" -> ic_web_<name> or ic_img_<name>) or a file path
+     * ("/.pics/x.png" or an absolute path on external storage).
+     * Returns null if it can't be resolved; the caller falls back.
+     */
+    fun loadRef(context: Context, refRaw: String?): Drawable? {
+        val ref = refRaw?.trim().orEmpty()
+        if (ref.isEmpty() || ref.equals("default", ignoreCase = true)) return null
+
+        // Bundled drawable reference: "@name" -> res/drawable/ic_web_<name>
+        // or ic_img_<name>. Lets web/zinc icons AND bundled images ship inside
+        // the APK (no external storage needed).
+        if (ref.startsWith("@")) {
+            val base = ref.removePrefix("@").lowercase()
+            for (prefix in arrayOf("ic_img_", "ic_web_")) {
+                try {
+                    val id = context.resources.getIdentifier(
+                        prefix + base, "drawable", context.packageName
+                    )
+                    if (id != 0) return context.getDrawable(id)
+                } catch (t: Throwable) {
+                    Log.w(TAG, "Failed to load bundled drawable $prefix$base: ${t.message}")
                 }
+            }
+            Log.i(TAG, "Bundled drawable not found for ref: $ref")
+            return null
+        }
+
+        // Explicit file path.
+        val file = resolveIconFile(ref)
+        if (file != null && file.exists() && file.canRead()) {
+            return try {
+                val bmp = BitmapFactory.decodeFile(file.absolutePath)
+                if (bmp != null) BitmapDrawable(context.resources, bmp) else null
             } catch (t: Throwable) {
-                Log.w(TAG, "Failed to load bundled icon $resName: ${t.message}")
+                Log.w(TAG, "Failed to decode image ${file.absolutePath}: ${t.message}")
                 null
             }
         }
-
-        // Explicit icon file path.
-        val iconPath = item.icon
-        if (iconPath.isNotEmpty() && !iconPath.equals("default", ignoreCase = true)) {
-            val file = resolveIconFile(iconPath)
-            if (file != null && file.exists() && file.canRead()) {
-                return try {
-                    val bmp = BitmapFactory.decodeFile(file.absolutePath)
-                    if (bmp != null) BitmapDrawable(context.resources, bmp) else null
-                } catch (t: Throwable) {
-                    Log.w(TAG, "Failed to decode icon ${file.absolutePath}: ${t.message}")
-                    null
-                }
-            } else {
-                Log.i(TAG, "Icon file not found: $iconPath")
-            }
-        }
+        Log.i(TAG, "Image file not found: $ref")
         return null
     }
 
