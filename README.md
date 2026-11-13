@@ -1,4 +1,4 @@
-# New Folder View (`com.dish.newfolderview`)
+# New Folder (`com.dish.newfolderview`)
 
 A modern Kotlin rebuild of Rick's Folderview, designed for **WS1 Launcher** devices
 (AE fully-managed, e.g. Samsung A11/SM-X200). WS1 Launcher owns and locks the home
